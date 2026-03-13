@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фланк — упражнение по вольтижировке</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Дополнительные стили только для этой страницы */
+        .exercise-header {
+            background: white;
+            border-radius: 32px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        /* ДВЕ КОЛОНКИ: фото + биомеханика */
+        .two-columns {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            align-items: center;
+        }
+
+        /* Левая колонка с фото */
+        .left-column {
+            flex: 0 0 300px;
+        }
+
+        /* Правая колонка с биомеханикой */
+        .right-column {
+            flex: 1;
+        }
+
+        /* Контейнер для изображения */
+        .image-container {
+            text-align: center;
+        }
+
+        /* Само изображение */
+        .clickable-image {
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .clickable-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px -5px rgba(0,0,0,0.3);
+        }
+
+        .image-caption {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Модальное окно (на весь экран) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .modal.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .exercise-content {
+            background: white;
+            border-radius: 32px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+            border-left: 8px solid #b45347;
+            padding-left: 1.5rem;
+        }
+
+        /* Блок биомеханики (в правой колонке) */
+        .biomechanics {
+            background: #faf7f2;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 0;
+        }
+
+        .biomechanics h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .biomechanics h2:before {
+            content: '⚙️';
+            font-size: 2rem;
+        }
+
+        .phase-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phase-item {
+            margin-bottom: 1.5rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+
+        .phase-item:before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #b45347;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        .phase-item strong {
+            font-size: 1.2rem;
+            color: #1e293b;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .phase-item p {
+            margin: 0.2rem 0 0 0;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        /* Блок Самопроверка */
+        .self-check {
+            background: #e8f0fe;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border-left: 8px solid #2c5f8a;
+        }
+
+        .self-check h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .self-check h2:before {
+            content: '✅';
+            font-size: 2rem;
+        }
+
+        .check-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .check-item {
+            margin-bottom: 1.2rem;
+            padding-left: 2.5rem;
+            position: relative;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .check-item:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #2c5f8a;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Блоки тренировок */
+        .training-block {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border: 1px solid #e9e4dc;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+        }
+
+        .training-block h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid #e9e4dc;
+            padding-bottom: 0.8rem;
+        }
+
+        .training-block h2:before {
+            font-size: 2rem;
+        }
+
+        .training-block.ground h2:before {
+            content: '🤸‍♀️';
+        }
+
+        .training-block.model-horse h2:before {
+            content: '🎠 🐴';
+        }
+
+        .training-content {
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .training-content p {
+            margin: 1rem 0;
+            white-space: pre-line;
+        }
+
+        .training-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .training-content li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .training-content li:before {
+            content: '•';
+            color: #b45347;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -0.3rem;
+        }
+
+        .coach-tip {
+            background: #f0f0f4;
+            padding: 1.2rem 1.5rem;
+            border-radius: 16px;
+            margin-top: 1.5rem;
+            font-style: italic;
+            border-left: 4px solid #b45347;
+        }
+
+        .coach-tip strong {
+            color: #b45347;
+            display: block;
+            margin-bottom: 0.3rem;
+            font-style: normal;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e3dad1;
+            color: #2c3e50;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            .two-columns {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .left-column {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
+            .biomechanics {
+                margin-top: 1.5rem;
+            }
+            
+            .close-modal {
+                top: 10px;
+                right: 15px;
+                font-size: 30px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            h1 { font-size: 2.4rem; }
+            .exercise-content { padding: 1.5rem; }
+            .training-block { padding: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Кнопка назад к списку -->
+        <a href="index.html" class="back-button">← Назад к списку упражнений</a>
+
+        <!-- Шапка с заголовком -->
+        <div class="exercise-header">
+            <h1>ФЛАНК</h1>
+            <div class="badge">Динамическое упражнение · Мах · Приземление</div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="exercise-content">
+            <!-- ДВЕ КОЛОНКИ: фото + биомеханика -->
+            <div class="two-columns">
+                <!-- Левая колонка с фото -->
+                <div class="left-column">
+                    <div class="image-container">
+                        <img src="flank-main.jpg" alt="Фланк - техника выполнения" class="clickable-image" onclick="openModal(this)">
+                        <p class="image-caption">Нажмите на фото, чтобы увеличить</p>
+                    </div>
+                </div>
+
+                <!-- Правая колонка с биомеханикой -->
+                <div class="right-column">
+                    <!-- Блок биомеханики -->
+                    <div class="biomechanics">
+                        <h2>Биомеханика</h2>
+                        <div class="phase-list">
+                            <div class="phase-item">
+                                <strong>Фланк в сед</strong>
+                                <p>Из седа лицом вперед, вольтижер выполняет мах вытянутыми ногами вверх до положения, близкого к стойке на руках, ноги сомкнуты, выпрямляя руки для максимального подъема. Не прерывая движения, в высшей точке подъема бедра резко сгибаются, опуская ноги в почти вертикальное положение. В этот момент бедра находятся прямо над гуртой, создавая «пике». Вольтижер мягко касается лошади, начиная с внешней стороны правой голени, и плавно переходит в вертикальное положение бокового седа внутрь. Лицо вольтижера может быть при этом слегка направлено вперед.</p>
+                            </div>
+                            <div class="phase-item">
+                                <strong>Фланк на ноги</strong>
+                                <p>Из седа лицом вперед, вольтижер выполняет мах вверх до положения, близкого к стойке на руках, ноги сомкнуты, выпрямляя руки для достижения максимального подъема. Это действие, в сочетании с отталкиванием плечами, обеспечивает дополнительную высоту подъема и максимальный полет. Вольтижер приземляется на обе ноги снаружи от лошади, лицом вперед.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок Самопроверка 1 -->
+            <div class="self-check">
+                <h2>Самопроверка: Фланк в сед</h2>
+                <ul class="check-list">
+                    <li class="check-item">Вы сидите в правильном исходном положении, слегка приподнимая ноги в положение замаха.</li>
+                    <li class="check-item">Отводите ноги назад до положения лодочки, сохраняя при этом напряжение в теле.</li>
+                    <li class="check-item">Выполняйте перекат вперед из положения лодочки, сохраняя руки почти прямыми.</li>
+                    <li class="check-item">Во время движения вперед начните выталкиваться в стойку на руках.</li>
+                    <li class="check-item">Сформируйте положение «пике», держа ноги плотно сомкнутыми.</li>
+                    <li class="check-item">Скользите вниз по внутренней стороне лошади и мягко опуститесь в сед, используя вес на руках для опоры.</li>
+                </ul>
+            </div>
+
+            <!-- Блок Самопроверка 2 -->
+            <div class="self-check">
+                <h2>Самопроверка: Фланк на ноги</h2>
+                <ul class="check-list">
+                    <li class="check-item">Вы сидите в правильном исходном положении, слегка приподнимая ноги в положение замаха.</li>
+                    <li class="check-item">Вы отводите ноги назад, пока не достигнете положения лодочки, сохраняя при этом напряжение в теле.</li>
+                    <li class="check-item">Вы выполняете перекат вперед из положения лодочки, сохраняя руки почти прямыми.</li>
+                    <li class="check-item">Во время движения вперед вы начинаете выталкиваться в стойку на руках.</li>
+                    <li class="check-item">Оттолкнитесь назад от ручек гурты наружу.</li>
+                    <li class="check-item">Приземлитесь с согнутыми коленями.</li>
+                </ul>
+            </div>
+
+            <!-- БЛОК 1: Тренировка на земле -->
+            <div class="training-block ground">
+                <h2>Тренировка на земле</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Стойка на руках (может быть спиной или животом к стене)</li>
+                        <li>Стойка на руках в группировке</li>
+                        <li>Кувырок вперёд из стойки на руках</li>
+                        <li>Из положения на коленях в стойку на руках в складке</li>
+                        <li>Опускание ног в складке из стойки на руках влево от левой руки</li>
+                        <li>Отжимания (как на земле, так и в стойке на руках)</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Старайтесь сохранять равновесие, находясь в положении складки, и очень медленно возвращайтесь в сед.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 2: Тренировка на макете и лошади -->
+            <div class="training-block model-horse">
+                <h2>Тренировка на макете и лошади</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Различные стойки на руках (в группировке, с переходом с колен в стойку на руках, со сменой ног в воздухе, с помощью партнёра)</li>
+                        <li>Падение из стойки на руках — колесо или кувырок вперёд.</li>
+                        <li>Мах в замедленном темпе (с акцентом на правильную технику).</li>
+                        <li>Прыжок с колен в стойку на руках в положении складки.</li>
+                        <li>Стойка на руках + максимально медленное и подконтрольное опускание, позволяя плечам двигаться вперёд, с завершением в боковой сед внутрь.</li>
+                        <li>Мах в положение планки.</li>
+                        <li>Стойка на руках ноги вместе.</li>
+                        <li>Стойка на руках + максимально медленное и подконтрольное опускание, позволяя плечам двигаться вперёд, с завершением в сед лицом вперед.</li>
+                        <li>Просмотрите видео выполнения фланка и проанализируйте его.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Продолжайте толкаться правой рукой, чтобы предотвратить падение на лошадь.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для увеличения фото -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+    function openModal(img) {
+        var modal = document.getElementById('imageModal');
+        var modalImg = document.getElementById('modalImage');
+        modal.style.display = 'block';
+        modalImg.src = img.src;
+        modal.classList.add('show');
+    }
+
+    function closeModal() {
+        var modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+    }
+
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Чтобы модальное окно не закрывалось при клике на само фото
+    document.getElementById('modalImage').addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+    </script>
+</body>
+</html>

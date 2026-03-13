@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мельница — упражнение по вольтижировке</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Дополнительные стили только для этой страницы */
+        .exercise-header {
+            background: white;
+            border-radius: 32px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        /* ДВЕ КОЛОНКИ: фото + блоки */
+        .two-columns {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            align-items: flex-start;
+        }
+
+        /* Левая колонка с фото */
+        .left-column {
+            flex: 0 0 300px;
+        }
+
+        /* Правая колонка с блоками */
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Контейнер для изображения */
+        .image-container {
+            text-align: center;
+        }
+
+        /* Само изображение */
+        .clickable-image {
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .clickable-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px -5px rgba(0,0,0,0.3);
+        }
+
+        .image-caption {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Модальное окно (на весь экран) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .modal.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .exercise-content {
+            background: white;
+            border-radius: 32px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+            border-left: 8px solid #b45347;
+            padding-left: 1.5rem;
+        }
+
+        /* Блок биомеханики */
+        .biomechanics {
+            background: #faf7f2;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+        }
+
+        .biomechanics h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .biomechanics h2:before {
+            content: '⚙️';
+            font-size: 2rem;
+        }
+
+        .phase-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phase-item {
+            margin-bottom: 2rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+
+        .phase-item:before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #b45347;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        .phase-item strong {
+            font-size: 1.2rem;
+            color: #1e293b;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .phase-item p {
+            margin: 0.2rem 0 0 0;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        /* Блок Самопроверка */
+        .self-check {
+            background: #e8f0fe;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border-left: 8px solid #2c5f8a;
+        }
+
+        .self-check h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .self-check h2:before {
+            content: '✅';
+            font-size: 2rem;
+        }
+
+        .check-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .check-item {
+            margin-bottom: 1.2rem;
+            padding-left: 2.5rem;
+            position: relative;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .check-item:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #2c5f8a;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Блок Развитие силы */
+        .strength-development {
+            background: #f5f0e6;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border-left: 8px solid #b47b45;
+        }
+
+        .strength-development h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #5d3a1a;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .strength-development h2:before {
+            content: '💪';
+            font-size: 2rem;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .grid-item {
+            text-align: center;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item img:hover {
+            transform: scale(1.05);
+        }
+
+        .grid-item p {
+            margin-top: 0.8rem;
+            color: #5d3a1a;
+            font-weight: 500;
+        }
+
+        /* Блоки тренировок */
+        .training-block {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border: 1px solid #e9e4dc;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+        }
+
+        .training-block h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid #e9e4dc;
+            padding-bottom: 0.8rem;
+        }
+
+        .training-block h2:before {
+            font-size: 2rem;
+        }
+
+        .training-block.ground h2:before {
+            content: '🤸‍♀️';
+        }
+
+        .training-block.model h2:before {
+            content: '🎠';
+        }
+
+        .training-block.horse h2:before {
+            content: '🐴';
+        }
+
+        .training-content {
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .training-content p {
+            margin: 1rem 0;
+            white-space: pre-line;
+        }
+
+        .training-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .training-content li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .training-content li:before {
+            content: '•';
+            color: #b45347;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -0.3rem;
+        }
+
+        .coach-tip {
+            background: #f0f0f4;
+            padding: 1.2rem 1.5rem;
+            border-radius: 16px;
+            margin-top: 1.5rem;
+            font-style: italic;
+            border-left: 4px solid #b45347;
+        }
+
+        .coach-tip strong {
+            color: #b45347;
+            display: block;
+            margin-bottom: 0.3rem;
+            font-style: normal;
+        }
+
+        /* Стили для блоков в правой колонке */
+        .req-box, .coach-box {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+            border: 1px solid #e9e4dc;
+        }
+
+        .req-box h2, .coach-box h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .req-box h2:before {
+            content: '💪';
+            font-size: 1.5rem;
+        }
+
+        .coach-box h2:before {
+            content: '🧠';
+            font-size: 1.5rem;
+        }
+
+        .req-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .req-list li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #2d3c4b;
+            line-height: 1.4;
+            font-size: 0.95rem;
+        }
+
+        .req-list li:before {
+            content: '•';
+            color: #b45347;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -0.3rem;
+        }
+
+        .coach-note p {
+            background: #f0f0f4;
+            padding: 1rem;
+            border-radius: 16px;
+            color: #1e293b;
+            font-style: italic;
+            line-height: 1.4;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e3dad1;
+            color: #2c3e50;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            .two-columns {
+                flex-direction: column;
+            }
+            
+            .left-column {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
+            .image-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .grid-item img {
+                height: 250px;
+            }
+            
+            .close-modal {
+                top: 10px;
+                right: 15px;
+                font-size: 30px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            h1 { font-size: 2.4rem; }
+            .exercise-content { padding: 1.5rem; }
+            .training-block { padding: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Кнопка назад к списку -->
+        <a href="index.html" class="back-button">← Назад к списку упражнений</a>
+
+        <!-- Шапка с заголовком -->
+        <div class="exercise-header">
+            <h1>МЕЛЬНИЦА</h1>
+            <div class="badge">Динамическое упражнение · Вращение</div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="exercise-content">
+            <!-- ДВЕ КОЛОНКИ: фото + блоки -->
+            <div class="two-columns">
+                <!-- Левая колонка с фото -->
+                <div class="left-column">
+                    <div class="image-container">
+                        <img src="mill-main.jpg" alt="Мельница - техника выполнения" class="clickable-image" onclick="openModal(this)">
+                        <p class="image-caption">Нажмите на фото, чтобы увеличить</p>
+                    </div>
+                </div>
+
+                <!-- Правая колонка с блоками -->
+                <div class="right-column">
+                    <!-- Требования к физической подготовке -->
+                    <div class="req-box">
+                        <h2>Требования к физ. подготовке</h2>
+                        <ul class="req-list">
+                            <li><strong>Поглощение движений лошади</strong></li>
+                            <li><strong>Подвижность таза/задней поверхности бедра</strong></li>
+                            <li><strong>Координация во вращении</strong></li>
+                            <li><strong>Достаточная сила четырехглавых и приводящих мышц бедра</strong></li>
+                            <li><strong>Стабильность мышц туловища</strong></li>
+                        </ul>
+                    </div>
+
+                    <!-- Подсказка тренеру -->
+                    <div class="coach-box">
+                        <h2>Подсказка тренеру</h2>
+                        <div class="coach-note">
+                            <p>Вы также можете использовать это в качестве списка для самопроверки. Нужно ли улучшить какой-либо аспект?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок биомеханики -->
+            <div class="biomechanics">
+                <h2>Биомеханика</h2>
+                <div class="phase-list">
+                    <div class="phase-item">
+                        <strong>Общее описание</strong>
+                        <p>«Мельница» - это упражнение, при котором спортсмен никогда не теряет положение седа на протяжении всех фаз. Начиная из положения седа лицом вперёд, вольтижёр совершает полный поворот вокруг своей оси на спине лошади в течение четырёх равномерных фаз.</p>
+                    </div>
+                    <div class="phase-item">
+                        <strong>Движение ног</strong>
+                        <p>В течение каждой фазы одна нога полностью вытягивается и переносится через лошадь по высокой, широкой дуге, образуя полукруг. Противоположная нога остаётся опущенной вниз, по центру лошади, мягко соприкасаясь с ней.</p>
+                    </div>
+                    <div class="phase-item">
+                        <strong>Положение корпуса</strong>
+                        <p>На протяжении всего упражнения корпус вольтижёра остаётся вертикальным, центрированным, с возможностью наклона назад до 10° от вертикали. Голова, плечи и таз вращаются одновременно с движением ног.</p>
+                    </div>
+                    <div class="phase-item">
+                        <strong>Ритм выполнения</strong>
+                        <p>Вольтижёр имеет право самостоятельно решать, когда отпускать или вновь брать ручки гурты во время выполнения упражнения. «Мельница» обычно выполняется на четырёх-тактном галопе, обеспечивая равномерность и координацию на протяжении всего поворота.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок Самопроверка -->
+            <div class="self-check">
+                <h2>Самопроверка</h2>
+                <ul class="check-list">
+                    <li class="check-item">В каждой фазе упражнения вы должны сидеть по центру и в равновесии</li>
+                    <li class="check-item">Ваши седалищные кости должны быть в полном контакте с лошадью</li>
+                    <li class="check-item">Избегайте чрезмерно высокого подъема бедра; однако, вам следует разворачивать ногу наружу и подтягивать коленную чашечку внутрь для правильной формы упражнения</li>
+                    <li class="check-item">Ваш корпус должен оставаться прямым и выровненным по направлению движения ноги, без скручивания или разворотов</li>
+                    <li class="check-item">Перемещайте каждую ногу в одинаковом темпе на протяжении всего упражнения</li>
+                    <li class="check-item">Голень той ноги, которая остается в контакте с лошадью, не должна оказывать чрезмерного давления. Она должна поддерживать контакт без излишнего напряжения</li>
+                </ul>
+            </div>
+
+            <!-- Блок Развитие силы (одно фото) -->
+            <div class="strength-development">
+                <h2>Развитие силы</h2>
+                <div class="image-grid">
+                    <div class="grid-item">
+                        <img src="mill-strength.jpg" alt="Подводящие упражнения" class="clickable-image" onclick="openModal(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 1: Тренировка на земле -->
+            <div class="training-block ground">
+                <h2>Тренировка на земле</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Подъемы ног: Сядьте или встаньте, поднимите одну ногу вверх, удерживая ее в вытянутом положении в течение нескольких секунд, прежде чем опустить. Повторите то же самое с другой ногой.</li>
+                        <li>Махи ногой через спинку стула: Сядьте на стул лицом к спинке и перекиньте ногу через нее в одну сторону, а затем обратно. Повторите то же самое с другой ногой.</li>
+                        <li>Махи ногами: Стоя или лежа, выполняйте махи ногой вперед, а затем в сторону контролируемым движением. Повторите обеими ногами.</li>
+                        <li>Наклоны вперед: Выполняйте наклоны вперед из положения сидя или стоя, чтобы растянуть подколенные сухожилия и улучшить гибкость ног.</li>
+                        <li>Пассивная растяжка: Попросите кого-либо помочь вам, аккуратно подтягивая вашу ногу к носу, пока вы сидите или лежите на спине.</li>
+                        <li>Растяжка у стены: Сядьте у стены и подтяните ногу к носу, чтобы растянуть мышцы ног.</li>
+                        <li>Круговые движения ногой: Лежа на спине, делайте большие, плавные круги ногой по часовой и против часовой стрелки. Поменяйте ногу.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Никогда не компенсируйте движения за счет подъема таза, чтобы поднять ногу выше. Всегда сохраняйте правильное положение в тазобедренных суставах.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 2: Тренировка на макете -->
+            <div class="training-block model">
+                <h2>Тренировка на макете</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Мельница со счетом: Выполняйте упражнение "мельница", считая вслух во время каждой фазы. Это помогает с таймингом и координацией.</li>
+                        <li>Мельница с согнутой ногой: Сосредоточьтесь на сохранении вертикального положения корпуса при выполнении "мельницы" с одной согнутой ногой. Этот вариант развивает баланс и контроль.</li>
+                        <li>Мельница без ручек гурты: Попробуйте выполнять "мельницу" без захвата ручек гурты, чтобы научить ваши бедра двигаться и самостоятельно поддерживать баланс.</li>
+                        <li>Мельница с утяжелителями: Добавьте дополнительный вес на голени при выполнении "мельницы", чтобы увеличить сложность и развить силу.</li>
+                        <li>Мельница с быстрым подъемом ноги: Быстро поднимайте одну ногу и медленно и контролируемо опускайте ее во время выполнения "мельницы". Этот вариант улучшает силу и контроль ног.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Притягивайте грудину к ноге, когда поднимаете ногу. Это помогает сохранять вертикальное положение корпуса.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 3: Тренировка на макете (продолжение) -->
+            <div class="training-block model">
+                <h2>Тренировка на макете</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Мельница с быстрым подъемом ноги: Быстро поднимайте одну ногу и медленно и контролируемо опускайте ее во время выполнения «мельницы». Этот вариант улучшает координацию и контроль.</li>
+                        <li>Мельница с захватом ноги: Поднимите ногу в самую высокую точку во время «мельницы», захватите ее рукой и притяните к носу, прежде чем отпустить. Это упражнение улучшает координацию и контроль.</li>
+                        <li>Половина мельницы с помощью: Выполняйте половину мельницы, когда кто-то стоит позади вас, подтягивая вашу ногу вверх, чтобы добавить сопротивление и усложнить упражнение.</li>
+                        <li>Мельница в противоположном направлении: Попробуйте выполнять «мельницу» в противоположном направлении, чтобы задействовать другие мышцы и улучшить гибкость.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Тянитесь грудиной к ноге, когда поднимаете ногу. Это помогает вам сохранять вертикальное положение.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 4: Тренировка на лошади -->
+            <div class="training-block horse">
+                <h2>Тренировка на лошади</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Мельница со счетом вслух: Выполняйте упражнение «мельница», считая вслух во время каждой фазы. Это помогает с таймингом и координацией.</li>
+                        <li>Мельница с согнутой ногой (фокус на вертикальном положении): Выполняя «мельницу», сохраняйте вертикальное положение корпуса, когда одна нога согнута. Этот вариант развивает ваш баланс и акцентирует правильную осанку.</li>
+                        <li>Мельница без ручек гурты (на шагу): Попробуйте выполнять мельницу без захвата ручек гурты. Это упражнение помогает научить ваши бедра двигаться и самостоятельно поддерживать баланс. Выполняйте его на шагу.</li>
+                        <li>Сед в каждом положении «Мельницы» (боком и лицом назад): Практикуйте сед в различных положениях «мельницы», как боком, так и лицом назад, чтобы развить хороший сед. Выполняйте это упражнение на шагу и галопе для улучшения положения всадника и баланса.</li>
+                        <li>Мельница с быстрым подъемом ноги и медленным контролируемым опусканием: Быстро поднимайте одну ногу и медленно и контролируемо опускайте ее во время выполнения мельницы. Этот вариант улучшает силу и контроль ног.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Всегда двигайтесь вместе с лошадью, чтобы обе седалищные кости оставались в контакте с лошадью.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для увеличения фото -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+    function openModal(img) {
+        var modal = document.getElementById('imageModal');
+        var modalImg = document.getElementById('modalImage');
+        modal.style.display = 'block';
+        modalImg.src = img.src;
+        modal.classList.add('show');
+    }
+
+    function closeModal() {
+        var modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+    }
+
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Чтобы модальное окно не закрывалось при клике на само фото
+    document.getElementById('modalImage').addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+    </script>
+</body>
+</html>

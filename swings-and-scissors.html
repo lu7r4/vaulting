@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Махи и ножницы лицом вперед — упражнение по вольтижировке</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Дополнительные стили только для этой страницы */
+        .exercise-header {
+            background: white;
+            border-radius: 32px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        /* ДВЕ КОЛОНКИ: фото + блоки */
+        .two-columns {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            align-items: flex-start;
+        }
+
+        /* Левая колонка с фото */
+        .left-column {
+            flex: 0 0 300px;
+        }
+
+        /* Правая колонка с блоками */
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Контейнер для изображения */
+        .image-container {
+            text-align: center;
+        }
+
+        /* Само изображение */
+        .clickable-image {
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .clickable-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px -5px rgba(0,0,0,0.3);
+        }
+
+        .image-caption {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Модальное окно (на весь экран) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .modal.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .exercise-content {
+            background: white;
+            border-radius: 32px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+            border-left: 8px solid #b45347;
+            padding-left: 1.5rem;
+        }
+
+        /* Блок биомеханики */
+        .biomechanics {
+            background: #faf7f2;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+        }
+
+        .biomechanics h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .biomechanics h2:before {
+            content: '⚙️';
+            font-size: 2rem;
+        }
+
+        .phase-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phase-item {
+            margin-bottom: 2rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+
+        .phase-item:before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #b45347;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        .phase-item strong {
+            font-size: 1.2rem;
+            color: #1e293b;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .phase-item p {
+            margin: 0.2rem 0 0 0;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        /* Блок Самопроверка */
+        .self-check {
+            background: #e8f0fe;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border-left: 8px solid #2c5f8a;
+        }
+
+        .self-check h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .self-check h2:before {
+            content: '✅';
+            font-size: 2rem;
+        }
+
+        .check-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .check-item {
+            margin-bottom: 1.2rem;
+            padding-left: 2.5rem;
+            position: relative;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .check-item:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #2c5f8a;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Блок Развитие силы */
+        .strength-development {
+            background: #f5f0e6;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border-left: 8px solid #b47b45;
+        }
+
+        .strength-development h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #5d3a1a;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .strength-development h2:before {
+            content: '💪';
+            font-size: 2rem;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .grid-item {
+            text-align: center;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item img:hover {
+            transform: scale(1.05);
+        }
+
+        .grid-item p {
+            margin-top: 0.8rem;
+            color: #5d3a1a;
+            font-weight: 500;
+        }
+
+        /* Блоки тренировок */
+        .training-block {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border: 1px solid #e9e4dc;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+        }
+
+        .training-block h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid #e9e4dc;
+            padding-bottom: 0.8rem;
+        }
+
+        .training-block h2:before {
+            font-size: 2rem;
+        }
+
+        .training-block.ground h2:before {
+            content: '🤸‍♀️';
+        }
+
+        .training-block.model h2:before {
+            content: '🎠';
+        }
+
+        .training-block.horse h2:before {
+            content: '🐴';
+        }
+
+        .training-content {
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .training-content p {
+            margin: 1rem 0;
+            white-space: pre-line;
+        }
+
+        .training-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .training-content li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .training-content li:before {
+            content: '•';
+            color: #b45347;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -0.3rem;
+        }
+
+        .coach-tip {
+            background: #f0f0f4;
+            padding: 1.2rem 1.5rem;
+            border-radius: 16px;
+            margin-top: 1.5rem;
+            font-style: italic;
+            border-left: 4px solid #b45347;
+        }
+
+        .coach-tip strong {
+            color: #b45347;
+            display: block;
+            margin-bottom: 0.3rem;
+            font-style: normal;
+        }
+
+        /* Стили для блоков в правой колонке */
+        .req-box, .coach-box {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+            border: 1px solid #e9e4dc;
+        }
+
+        .req-box h2, .coach-box h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .req-box h2:before {
+            content: '💪';
+            font-size: 1.5rem;
+        }
+
+        .coach-box h2:before {
+            content: '🧠';
+            font-size: 1.5rem;
+        }
+
+        .req-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .req-list li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #2d3c4b;
+            line-height: 1.4;
+            font-size: 0.95rem;
+        }
+
+        .req-list li:before {
+            content: '•';
+            color: #b45347;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -0.3rem;
+        }
+
+        .coach-note p {
+            background: #f0f0f4;
+            padding: 1rem;
+            border-radius: 16px;
+            color: #1e293b;
+            font-style: italic;
+            line-height: 1.4;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e3dad1;
+            color: #2c3e50;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            .two-columns {
+                flex-direction: column;
+            }
+            
+            .left-column {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
+            .image-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .grid-item img {
+                height: 250px;
+            }
+            
+            .close-modal {
+                top: 10px;
+                right: 15px;
+                font-size: 30px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            h1 { font-size: 2.4rem; }
+            .exercise-content { padding: 1.5rem; }
+            .training-block { padding: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Кнопка назад к списку -->
+        <a href="index.html" class="back-button">← Назад к списку упражнений</a>
+
+        <!-- Шапка с заголовком -->
+        <div class="exercise-header">
+            <h1>МАХИ И НОЖНИЦЫ ЛИЦОМ ВПЕРЕД</h1>
+            <div class="badge">Динамическое упражнение · Махи · Ножницы</div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="exercise-content">
+            <!-- ДВЕ КОЛОНКИ: фото + блоки -->
+            <div class="two-columns">
+                <!-- Левая колонка с фото -->
+                <div class="left-column">
+                    <div class="image-container">
+                        <img src="swings-scissors-main.jpg" alt="Махи и ножницы лицом вперед - техника выполнения" class="clickable-image" onclick="openModal(this)">
+                        <p class="image-caption">Нажмите на фото, чтобы увеличить</p>
+                    </div>
+                </div>
+
+                <!-- Правая колонка с блоками -->
+                <div class="right-column">
+                    <!-- Что важно тренировать -->
+                    <div class="req-box">
+                        <h2>Наиболее важно тренировать</h2>
+                        <ul class="req-list">
+                            <li><strong>Мышцы-стабилизаторы туловища</strong></li>
+                            <li><strong>Способность поглощать движения лошади</strong></li>
+                            <li><strong>Сильный плечевой пояс</strong></li>
+                        </ul>
+                    </div>
+
+                    <!-- Подсказка тренеру -->
+                    <div class="coach-box">
+                        <h2>Подсказка тренеру</h2>
+                        <div class="coach-note">
+                            <p>Вы также можете использовать это в качестве списка для самопроверки. Нужно ли улучшить какой-либо аспект?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок биомеханики -->
+            <div class="biomechanics">
+                <h2>Биомеханика</h2>
+                <div class="phase-list">
+                    <div class="phase-item">
+                        <strong>Мах лицом вперед</strong>
+                        <p>Из седа лицом вперед вытяните ноги вверх плавным движением, стремясь к положению, близкому к стойке на руках со сведенными ногами. Одновременно разогните руки, чтобы достичь наивысшей возможной высоты подъема. Затем плавно вернитесь в сед лицом вперед без какой-либо паузы в движении на пике вашего подъема. Это упражнение требует баланса и контроля.</p>
+                    </div>
+                    <div class="phase-item">
+                        <strong>Ножницы с поворотом</strong>
+                        <p>Из седа лицом вперед начните движение, выполняя мах вытянутыми ногами вверх, стремясь достичь положения, близкого к стойке на руках. Одновременно разогните руки, чтобы достичь наивысшей возможной точки подъема. Без какой-либо паузы в маховом движении поверните таз влево на четверть оборота (90 градусов), позволяя ногам пройти близко друг к другу на одинаковом расстоянии от земли в точке максимальной высоты подъема.</p>
+                    </div>
+                    <div class="phase-item">
+                        <strong>Завершение</strong>
+                        <p>Завершите упражнение мягким приземлением, сохраняя прямое и отцентрированное положение в седе, но уже лицом назад. Это упражнение сочетает в себе ловкость, баланс и контроль.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок Самопроверка для Маха лицом вперед -->
+            <div class="self-check">
+                <h2>Самопроверка: Мах лицом вперед</h2>
+                <ul class="check-list">
+                    <li class="check-item">Вы должны сохранять правильное исходное положение, слегка поднимая ноги для замаха.</li>
+                    <li class="check-item">Отводите ноги назад, пока не достигнете положения лодочки, сохраняя напряжение в теле.</li>
+                    <li class="check-item">Выполняйте перекат вперед из лодочки, сохраняя руки почти прямыми.</li>
+                    <li class="check-item">По мере движения вперед, начинайте выталкиваться в стойку на руках.</li>
+                    <li class="check-item">Выталкивайтесь вверх, а не назад.</li>
+                    <li class="check-item">Держите руки почти прямыми и избегайте отведения плеч назад.</li>
+                </ul>
+            </div>
+
+            <!-- Блок Развитие силы (3 картинки) -->
+            <div class="strength-development">
+                <h2>Развитие силы</h2>
+                <div class="image-grid">
+                    <div class="grid-item">
+                        <img src="swings-scissors-strength1.jpg" alt="Подводящее упражнение 1" class="clickable-image" onclick="openModal(this)">
+                    </div>
+                    <div class="grid-item">
+                        <img src="swings-scissors-strength2.jpg" alt="Подводящее упражнение 2" class="clickable-image" onclick="openModal(this)">
+                    </div>
+                    <div class="grid-item">
+                        <img src="swings-scissors-strength3.jpg" alt="Подводящее упражнение 3" class="clickable-image" onclick="openModal(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 1: Тренировка на земле -->
+            <div class="training-block ground">
+                <h2>Тренировка на земле</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Стойка на руках в группировке.</li>
+                        <li>Кувырок вперёд из стойки на руках.</li>
+                        <li>Стойка на голове + переход в стойку на руках (можно выполнять у стены или с помощью).</li>
+                        <li>Мах с фитбола или любого упругого материала.</li>
+                        <li>Стойка на руках + максимально медленное и контролируемое опускание, позволяя плечам двигаться вперёд, с сохранением лёгкого прогиба (лодочки) в конце.</li>
+                        <li>Стойка на руках спиной или животом к стене + поворот ножницами.</li>
+                        <li>Стойка на руках с помощью партнёра (поддержкой) + поворот ножницами.</li>
+                        <li>Стойка на руках с опорой на палку, удерживаемую партнёром + поворот ножницами.</li>
+                        <li>Стойка на руках + поворот ножницами + возвращение в обычную стойку на руках.</li>
+                        <li>Мах с поворотом ножницами с фитбола или любого упругого материала.</li>
+                        <li>Стойка на руках с поворотом ножницами + максимально медленное и контролируемое опускание с сохранением поворота тела до конца упражнения.</li>
+                        <li>Прыжок двумя ногами в положение стойки на руках с ножницами.</li>
+                        <li>Прыжок двумя ногами, позволяя ногам развестись в стороны для достижения положения стойки на руках с ножницами.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Работайте над ритмом, формой тела и мышечным напряжением перед выполнением высоких махов.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 2: Тренировка на макете -->
+            <div class="training-block model">
+                <h2>Тренировка на макете</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Различные стойки на руках (в группировке, с переходом из положения с колен в стойку на руках, со сменой ног в воздухе, с помощью партнёра).</li>
+                        <li>Падение из стойки на руках - колесо или кувырок вперёд.</li>
+                        <li>Мах в замедленном темпе (с акцентом на правильную технику).</li>
+                        <li>Мах в положение планки.</li>
+                        <li>Мах с помощью - один человек ловит и поднимает ноги, в то время как другой толкает плечи.</li>
+                        <li>Стойка на руках + максимально медленное и подконтрольное опускание, позволяя плечам двигаться вперёд, с завершением в сед лицом вперед.</li>
+                        <li>Мах с помощью - кто-то толкает ваши плечи вверх.</li>
+                        <li>Стойка на руках с поворотом "ножницы".</li>
+                        <li>Положение "ножницы" в стойке на руках + падение.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Вы никогда не сможете отработать достаточно махов на тренировке! Всегда работайте над правильным положением тела.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 3: Тренировка на макете (продолжение) -->
+            <div class="training-block model">
+                <h2>Тренировка на макете</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Мах в положение боковой планки со скрещенными ногами.</li>
+                        <li>Ножницы с помощью: один человек подхватывает и поднимает ноги, а другой толкает плечи и поддерживает при опускании.</li>
+                        <li>Из положения ножниц в стойке на руках опускайтесь как можно медленнее и контролируемо, позволяя плечам двигаться вперед, завершая движение в положении седа лицом назад.</li>
+                        <li>Ножницы с помощью: кто-то толкает ваши плечи вверх.</li>
+                        <li>Прыжок с двух ног, позволяя ногам развестись в стороны, чтобы достичь положения ножниц в стойке на руках.</li>
+                        <li>Положение боковой планки со скрещенными ногами + скольжение в положение седа лицом назад.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Никогда не бывает слишком много махов на тренировке! Всегда работайте над правильным положением тела.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 4: Тренировка на лошади -->
+            <div class="training-block horse">
+                <h2>Тренировка на лошади</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Мах в планку.</li>
+                        <li>Стойка на руках (со сменой ног, ноги вместе).</li>
+                        <li>Стойка на руках + максимально медленное и контролируемое опускание, позволяя плечам двигаться вперед, с завершением в сед лицом вперед.</li>
+                        <li>Падение из стойки на руках - колесо или кувырок вперед.</li>
+                        <li>Мах из стойки на руках в вертикальный шпагат.</li>
+                        <li>Мах в стойку на плече.</li>
+                        <li>Мах в боковую планку.</li>
+                        <li>Положение боковой планки со скрещенными ногами + скольжение в сед лицом назад.</li>
+                        <li>Положение ножниц в стойке на руках + максимально медленное и контролируемое опускание, позволяя плечам двигаться вперед; конечная позиция: сед лицом назад.</li>
+                        <li>Мах на галопе с коротким поворотом ножницами над спиной лошади; после этого - разворот и приземление в сед лицом вперед.</li>
+                        <li>Просмотрите видео ваших ножниц и проанализируйте его.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Пусть они тренируют "перекат" из стойки на руках или опускание из стойки на руках в стойку на плече, чтобы вольтижеры не боялись выполнять высокие элементы. Сначала работайте над контролем в махах, прежде чем приступать к ножницам. (Независимо от высоты)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для увеличения фото -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+    function openModal(img) {
+        var modal = document.getElementById('imageModal');
+        var modalImg = document.getElementById('modalImage');
+        modal.style.display = 'block';
+        modalImg.src = img.src;
+        modal.classList.add('show');
+    }
+
+    function closeModal() {
+        var modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+    }
+
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Чтобы модальное окно не закрывалось при клике на само фото
+    document.getElementById('modalImage').addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+    </script>
+</body>
+</html>

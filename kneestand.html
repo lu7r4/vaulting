@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Стойка на коленях — упражнение по вольтижировке</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Дополнительные стили только для этой страницы */
+        .exercise-header {
+            background: white;
+            border-radius: 32px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        /* ДВЕ КОЛОНКИ: фото + биомеханика */
+/* ДВЕ КОЛОНКИ: фото + биомеханика */
+        .two-columns {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            align-items: center;  /* ← измените эту строку */
+        }
+
+        /* Левая колонка с фото */
+        .left-column {
+            flex: 0 0 300px;
+        }
+
+        /* Правая колонка с биомеханикой */
+        .right-column {
+            flex: 1;
+        }
+
+        /* Контейнер для изображения */
+        .image-container {
+            text-align: center;
+        }
+
+        /* Само изображение */
+        .clickable-image {
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .clickable-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px -5px rgba(0,0,0,0.3);
+        }
+
+        .image-caption {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Модальное окно (на весь экран) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .modal.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .exercise-content {
+            background: white;
+            border-radius: 32px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+            border-left: 8px solid #b45347;
+            padding-left: 1.5rem;
+        }
+
+        /* Блок биомеханики (в правой колонке) */
+        .biomechanics {
+            background: #faf7f2;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 0;  /* убираем стандартные отступы */
+        }
+
+        .biomechanics h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .biomechanics h2:before {
+            content: '⚙️';
+            font-size: 2rem;
+        }
+
+        .phase-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phase-item {
+            margin-bottom: 2rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+
+        .phase-item:before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #b45347;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        .phase-item strong {
+            font-size: 1.2rem;
+            color: #1e293b;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .phase-item p {
+            margin: 0.2rem 0 0 0;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        /* Блок Самопроверка */
+        .self-check {
+            background: #e8f0fe;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border-left: 8px solid #2c5f8a;
+        }
+
+        .self-check h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .self-check h2:before {
+            content: '✅';
+            font-size: 2rem;
+        }
+
+        .check-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .check-item {
+            margin-bottom: 1.2rem;
+            padding-left: 2.5rem;
+            position: relative;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .check-item:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #2c5f8a;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Блоки тренировок */
+        .training-block {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border: 1px solid #e9e4dc;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+        }
+
+        .training-block h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid #e9e4dc;
+            padding-bottom: 0.8rem;
+        }
+
+        .training-block h2:before {
+            font-size: 2rem;
+        }
+
+        .training-block.ground h2:before {
+            content: '🤸‍♀️';
+        }
+
+        .training-block.model-horse h2:before {
+            content: '🎠 🐴';
+        }
+
+        .training-content {
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .training-content p {
+            margin: 1rem 0;
+            white-space: pre-line;
+        }
+
+        .training-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .training-content li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .training-content li:before {
+            content: '•';
+            color: #b45347;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -0.3rem;
+        }
+
+        .coach-tip {
+            background: #f0f0f4;
+            padding: 1.2rem 1.5rem;
+            border-radius: 16px;
+            margin-top: 1.5rem;
+            font-style: italic;
+            border-left: 4px solid #b45347;
+        }
+
+        .coach-tip strong {
+            color: #b45347;
+            display: block;
+            margin-bottom: 0.3rem;
+            font-style: normal;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e3dad1;
+            color: #2c3e50;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            .two-columns {
+                flex-direction: column;
+            }
+            
+            .left-column {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
+            .biomechanics {
+                margin-top: 1.5rem;
+            }
+            
+            .close-modal {
+                top: 10px;
+                right: 15px;
+                font-size: 30px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            h1 { font-size: 2.4rem; }
+            .exercise-content { padding: 1.5rem; }
+            .training-block { padding: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Кнопка назад к списку -->
+        <a href="index.html" class="back-button">← Назад к списку упражнений</a>
+
+        <!-- Шапка с заголовком -->
+        <div class="exercise-header">
+            <h1>СТОЙКА НА КОЛЕНЯХ</h1>
+            <div class="badge">Статическое упражнение · Баланс</div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="exercise-content">
+            <!-- ДВЕ КОЛОНКИ: фото + биомеханика -->
+            <div class="two-columns">
+                <!-- Левая колонка с фото -->
+                <div class="left-column">
+                    <div class="image-container">
+                        <img src="kneestand-main.jpg" alt="Стойка на коленях - техника выполнения" class="clickable-image" onclick="openModal(this)">
+                        <p class="image-caption">Нажмите на фото, чтобы увеличить</p>
+                    </div>
+                </div>
+
+                <!-- Правая колонка с биомеханикой -->
+                <div class="right-column">
+                    <!-- Блок биомеханики (теперь справа от фото) -->
+                    <div class="biomechanics">
+                        <h2>Биомеханика</h2>
+                        <div class="phase-list">
+                            <div class="phase-item">
+                                <strong>Переход в стойку на коленях</strong>
+                                <p>Из положения седа лицом вперед вольтижер плавно переходит в положение на коленях обеими ногами одновременно. Голени располагаются плоско на паде, параллельно позвоночнику лошади, на ширине бёдер. Носки должны быть натянуты, а вес равномерно распределен от колен до носков.</p>
+                            </div>
+                            <div class="phase-item">
+                                <strong>Фиксация положения</strong>
+                                <p>Когда вольтижер принимает положение стойки на коленях, обе ручки гурты одновременно отпускаются. Это положение тела создает вертикальную линию, проходящую от плеча до бедра, которое синхронизируется с движением лошади. Плечи должны находиться на одной линии с линией плеча лошади. Движение галопа поглощается ногами и верхней частью тела.</p>
+                            </div>
+                            <div class="phase-item">
+                                <strong>Положение рук</strong>
+                                <p>Руки немедленно вытягиваются и могут быть разведены в стороны или вперёд, в зависимости от национальных правил.</p>
+                            </div>
+                            <div class="phase-item">
+                                <strong>Возврат в сед</strong>
+                                <p>По завершении этого движения вольтижер одновременно берётся за ручки гурты обеими руками. На протяжении всего этого перехода вольтижер должен держать голову поднятой, глядя вперёд, плавно переходя в положение седа лицом вперёд с прямыми ногами.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок Самопроверка -->
+            <div class="self-check">
+                <h2>Самопроверка</h2>
+                <ul class="check-list">
+                    <li class="check-item">Убедитесь в мягком приземлении, опускаясь плавно с подъёма стопы на всю голень</li>
+                    <li class="check-item">Расположите голени плоско на паде, параллельно позвоночнику лошади, на ширине бёдер. Держите носки прямо в этом положении.</li>
+                    <li class="check-item">Одновременно отпустите ручки гурты, принимая положение стойки на коленях. Создайте вертикальную линию, проходящую от плеча через бедро.</li>
+                    <li class="check-item">Ваши плечи должны быть параллельны линии плеч лошади. Поглощайте движения галопа как ногами, так и верхней частью тела.</li>
+                    <li class="check-item">На протяжении всего движения держите голову направленной вперёд.</li>
+                    <li class="check-item">Возьмитесь за ручки гурты и мягко опуститесь обратно в сед лицом вперёд, частично перенося вес на руки.</li>
+                </ul>
+            </div>
+
+            <!-- БЛОК 1: Тренировка на земле -->
+            <div class="training-block ground">
+                <h2>Тренировка на земле</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Контроль положения с закрытыми глазами: Попросите тренера или другого вольтижёра скорректировать ваше положение на коленях, пока вы закрываете глаза. Это помогает развивать лучшее чувство равновесия и осознания своего тела.</li>
+                        <li>Таз вперёд без прогиба в пояснице: Практикуйте положение на коленях, толкая таз вперёд без чрезмерного прогиба в спине. Сохраняйте нейтральное положение позвоночника для правильной выстройки.</li>
+                        <li>Положение на коленях с руками на гурте + Подъёмы колен: Стоя на коленях, положите руки на гурту и поднимите колени на несколько сантиметров вверх, затем опустите их обратно, перенося часть веса на руки. Это упражнение укрепляет руки и улучшает вашу стабильность.</li>
+                        <li>Ходьба с правильным положением рук: Ходите, удерживая руки в правильном положении (согласно правилам вашего вида спорта). Вы можете добавить отягощения для усложнения и развития силы и выносливости.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Держите колени направленными вперёд и сводите их, оставляя между ними расстояние, равное ширине позвоночника лошади.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 2: Тренировка на макете и лошади -->
+            <div class="training-block model-horse">
+                <h2>Тренировка на макете и лошади</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Коррекция положения с закрытыми глазами: Попросите тренера или другого вольтижёра скорректировать ваше положение на коленях, пока вы закрываете глаза. Это помогает развивать лучшее чувство равновесия и осознания своего тела.</li>
+                        <li>Проверка в зеркале или фото/видео анализ: Используйте зеркало для проверки вашего положения на коленях или делайте фото/видео для анализа вашей позы. Эта визуальная обратная связь может быть ценной для внесения корректировок.</li>
+                        <li>Таз вперёд, без прогиба в пояснице: Практикуйте положение на коленях, толкая таз вперёд без чрезмерного прогиба в спине. Сосредоточьтесь при этом на поддержании прямого положения позвоночника.</li>
+                        <li>Положение на коленях с руками на гурте + Подъёмы колен: Встаньте на колени, положив руки на гурту, и поднимите колени на несколько сантиметров вверх, а затем опустите их обратно, перенося часть веса на ноги. Это упражнение укрепляет мышцы ног и улучшает вашу стабильность.</li>
+                        <li>Положение на коленях с правильным положением рук и добавлением отягощений: Сохраняйте правильное положение рук, необходимое для вольтижировки, добавляя при этом дополнительные отягощения. Это можно сделать с помощью утяжелителей для запястий или лодыжек, чтобы усложнить упражнение и развить силу.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Поглощайте движения лошади коленями и бёдрами.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для увеличения фото -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+    function openModal(img) {
+        var modal = document.getElementById('imageModal');
+        var modalImg = document.getElementById('modalImage');
+        modal.style.display = 'block';
+        modalImg.src = img.src;
+        modal.classList.add('show');
+    }
+
+    function closeModal() {
+        var modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+    }
+
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Чтобы модальное окно не закрывалось при клике на само фото
+    document.getElementById('modalImage').addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+    </script>
+</body>
+</html>

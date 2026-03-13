@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ласточка — упражнение по вольтижировке</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Дополнительные стили только для этой страницы */
+        .exercise-header {
+            background: white;
+            border-radius: 32px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        /* ДВЕ КОЛОНКИ: фото + блоки */
+        .two-columns {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            align-items: flex-start;
+        }
+
+        /* Левая колонка с фото */
+        .left-column {
+            flex: 0 0 300px;
+        }
+
+        /* Правая колонка с блоками */
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Контейнер для изображения */
+        .image-container {
+            text-align: center;
+        }
+
+        /* Само изображение */
+        .clickable-image {
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .clickable-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px -5px rgba(0,0,0,0.3);
+        }
+
+        .image-caption {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Модальное окно (на весь экран) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .modal.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .exercise-content {
+            background: white;
+            border-radius: 32px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 0.25rem;
+            border-left: 8px solid #b45347;
+            padding-left: 1.5rem;
+        }
+
+        /* Блок биомеханики */
+        .biomechanics {
+            background: #faf7f2;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+        }
+
+        .biomechanics h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .biomechanics h2:before {
+            content: '⚙️';
+            font-size: 2rem;
+        }
+
+        .phase-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: phase;
+        }
+
+        .phase-item {
+            counter-increment: phase;
+            margin-bottom: 2rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+
+        .phase-item:before {
+            content: counter(phase);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #b45347;
+            color: white;
+            font-weight: bold;
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .phase-item strong {
+            font-size: 1.2rem;
+            color: #1e293b;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .phase-item p {
+            margin: 0.2rem 0 0 0;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        /* Блок Самопроверка */
+        .self-check {
+            background: #e8f0fe;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border-left: 8px solid #2c5f8a;
+        }
+
+        .self-check h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .self-check h2:before {
+            content: '✅';
+            font-size: 2rem;
+        }
+
+        .check-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .check-item {
+            margin-bottom: 1.2rem;
+            padding-left: 2.5rem;
+            position: relative;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .check-item:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #2c5f8a;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Блок Развитие силы */
+        .strength-development {
+            background: #f5f0e6;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border-left: 8px solid #b47b45;
+        }
+
+        .strength-development h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #5d3a1a;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .strength-development h2:before {
+            content: '💪';
+            font-size: 2rem;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .grid-item {
+            text-align: center;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item img:hover {
+            transform: scale(1.05);
+        }
+
+        .grid-item p {
+            margin-top: 0.8rem;
+            color: #5d3a1a;
+            font-weight: 500;
+        }
+
+        /* Блоки тренировок */
+        .training-block {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.75rem 2rem;
+            margin: 2rem 0;
+            border: 1px solid #e9e4dc;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+        }
+
+        .training-block h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 2px solid #e9e4dc;
+            padding-bottom: 0.8rem;
+        }
+
+        .training-block h2:before {
+            font-size: 2rem;
+        }
+
+        .training-block.ground h2:before {
+            content: '🤸‍♀️';
+        }
+
+        .training-block.model h2:before {
+            content: '🎠';
+        }
+
+        .training-block.horse h2:before {
+            content: '🐴';
+        }
+
+        .training-content {
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .training-content p {
+            margin: 1rem 0;
+            white-space: pre-line;
+        }
+
+        .training-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .training-content li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .training-content li:before {
+            content: '•';
+            color: #b45347;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -0.3rem;
+        }
+
+        .coach-tip {
+            background: #f0f0f4;
+            padding: 1.2rem 1.5rem;
+            border-radius: 16px;
+            margin-top: 1.5rem;
+            font-style: italic;
+            border-left: 4px solid #b45347;
+        }
+
+        .coach-tip strong {
+            color: #b45347;
+            display: block;
+            margin-bottom: 0.3rem;
+            font-style: normal;
+        }
+
+        /* Стили для блоков в правой колонке */
+        .req-box, .coach-box {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+            border: 1px solid #e9e4dc;
+        }
+
+        .req-box h2, .coach-box h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .req-box h2:before {
+            content: '💪';
+            font-size: 1.5rem;
+        }
+
+        .coach-box h2:before {
+            content: '🧠';
+            font-size: 1.5rem;
+        }
+
+        .req-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .req-list li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #2d3c4b;
+            line-height: 1.4;
+            font-size: 0.95rem;
+        }
+
+        .req-list li:before {
+            content: '•';
+            color: #b45347;
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -0.3rem;
+        }
+
+        .coach-note p {
+            background: #f0f0f4;
+            padding: 1rem;
+            border-radius: 16px;
+            color: #1e293b;
+            font-style: italic;
+            line-height: 1.4;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e3dad1;
+            color: #2c3e50;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            .two-columns {
+                flex-direction: column;
+            }
+            
+            .left-column {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
+            .image-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .grid-item img {
+                height: 250px;
+            }
+            
+            .close-modal {
+                top: 10px;
+                right: 15px;
+                font-size: 30px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            h1 { font-size: 2.4rem; }
+            .exercise-content { padding: 1.5rem; }
+            .training-block { padding: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Кнопка назад к списку -->
+        <a href="index.html" class="back-button">← Назад к списку упражнений</a>
+
+        <!-- Шапка с заголовком -->
+        <div class="exercise-header">
+            <h1>ЛАСТОЧКА</h1>
+            <div class="badge">Статическое упражнение</div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="exercise-content">
+            <!-- ДВЕ КОЛОНКИ: фото + блоки -->
+            <div class="two-columns">
+                <!-- Левая колонка с фото -->
+                <div class="left-column">
+                    <div class="image-container">
+                        <img src="swallow-main.jpg" alt="Ласточка - техника выполнения" class="clickable-image" onclick="openModal(this)">
+                        <p class="image-caption">Нажмите на фото, чтобы увеличить</p>
+                    </div>
+                
+                </div>
+
+                <!-- Правая колонка с блоками -->
+                <div class="right-column">
+                    <!-- Что важно тренировать -->
+                    <div class="req-box">
+                        <h2>Наиболее важно тренировать</h2>
+                        <ul class="req-list">
+                            <li><strong>Мышцы спины</strong></li>
+                            <li><strong>Умение следовать движениям лошади</strong></li>
+                            <li><strong>Умение раскрывать/вытягивать поднятую ногу в тазобедренном суставе</strong></li>
+                            <li><strong>Стабильность в плечевом поясе — сведите лопатки</strong></li>
+                            <li><strong>Гибкость плечевого и тазобедренного суставов</strong></li>
+                        </ul>
+                    </div>
+
+                    <!-- Подсказка тренеру -->
+                    <div class="coach-box">
+                        <h2>Подсказка тренеру</h2>
+                        <div class="coach-note">
+                            <p>Вы также можете использовать это в качестве списка для самопроверки. Нужно ли улучшить какой-либо аспект?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок биомеханики -->
+            <div class="biomechanics">
+                <h2>Биомеханика</h2>
+                <div class="phase-list">
+                    <div class="phase-item">
+                        <strong>Переход в скамейку</strong>
+                        <p>Из положения седа лицом вперед, вольтижер переходит в стойку на коленях или "скамейку". Важно, чтобы ноги приземлялись одновременно и по диагонали на спину лошади. Левое колено ставится с левой стороны позвоночника лошади, а носок левой ноги - с правой стороны позвоночника. Левая нога вольтижера, которая находится в постоянном контакте со спиной лошади, называется опорной.</p>
+                    </div>
+                    <div class="phase-item">
+                        <strong>Подъем руки и ноги</strong>
+                        <p>Вольтижер одновременно поднимает правую ногу и левую руку в вытянутое положение, создавая горизонтальную линию между кистью и стопой, не меняя положения скамьи. Голова вольтижера остается поднятой на протяжении всего упражнения.</p>
+                    </div>
+                    <div class="phase-item">
+                        <strong>Разделение на фазы</strong>
+                        <p>Для лучшего выполнения ласточки может оказаться полезным разделить её на две отдельные фазы: переход в "скамейку", а затем переход в полноценную ласточку. Такой подход позволяет добиться более контролируемого и точного выполнения движения.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок Самопроверка -->
+            <div class="self-check">
+                <h2>Самопроверка</h2>
+                <ul class="check-list">
+                    <li class="check-item">Сначала вольтижер должен принять положение "скамейки", и затем перейти в "ласточку"</li>
+                    <li class="check-item">В этом положении ваша опорная нога должна располагаться по диагонали над позвоночником лошади, при этом колено должно находиться с левой стороны, а стопа - с правой стороны от позвоночника</li>
+                    <li class="check-item">Ваша стопа должна быть выпрямлена, следите чтобы носок не был направлен в сторону лошади</li>
+                    <li class="check-item">Ваши плечи должны оставаться на одинаковой высоте и быть равномерно направлены вперед</li>
+                    <li class="check-item">Чтобы сохранить устойчивость, вы должны поглощать движения лошади правой рукой и левой ногой</li>
+                    <li class="check-item">Когда вы вытягиваете ногу или руку, ваше положение в "скамейке" должно оставаться точно таким же</li>
+                </ul>
+            </div>
+
+            <!-- Блок Развитие силы (одно фото) -->
+            <div class="strength-development">
+                <h2>Развитие силы</h2>
+                <div class="image-grid">
+                    <div class="grid-item">
+                        <img src="swallow-strength.jpg" alt="Подводящие упражнения" class="clickable-image" onclick="openModal(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 1: Тренировка на земле -->
+            <div class="training-block ground">
+                <h2>Тренировка на земле</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Упражнения на гибкость плеч: Включите упражнения на гибкость плеч в программу тренировок, чтобы увеличить амплитуду их движений и стабильность мышц.</li>
+                        <li>Правильная скамейка с поднятием руки и ноги: тренируйте правильное положение скамейки и добавляйте варианты, когда Вы поднимаете одну руку или одну ногу, сохраняя правильное положение.</li>
+                        <li>Правильная скамейка с работой над положением головы: Работайте над совершенствованием положения головы, выполняя упражнения на подтягивание подбородка, находясь в правильном положении скамейки.</li>
+                        <li>Ласточка на балансировочной платформе или подушке: проверьте свои способности, выполняя ласточку, стоя коленом на подвижной опоре. Это добавляет элемент неустойчивости в упражнение и позволяет развивать равновесие и контроль тела.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Если вольтижер сначала компенсирует нагрузку не голенью, а рукой, убедитесь, что он демонстрирует правильную технику упражнения.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 2: Тренировка на земле (продолжение) -->
+            <div class="training-block ground">
+                <h2>Тренировка на земле</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Ласточка с внешним воздействием: Попросите кого-нибудь слегка вывести вас из равновесия, пока вы пытаетесь удержать положение ласточки. Это упражнение помогает развить устойчивость и сопротивляемость внешним силам.</li>
+                        <li>Положение скамейки с движением плеч: Находясь в положении скамейки, переместите плечи на несколько сантиметров вперед, а затем верните их в правильное положение, следя за тем, чтобы ваши голени все время оставались прижатыми к полу/лошади.</li>
+                        <li>Положение скамейки с подъемом коленей: Из положения скамейки приподнимайте колени на несколько сантиметров от спины лошади, задержитесь на несколько секунд, а затем вернитесь в исходное положение. Это упражнение укрепляет мышцы туловища и улучшает контроль.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Если вольтижер сначала компенсирует нагрузку не голенью, а рукой, убедитесь, что он демонстрирует правильную технику упражнения.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 3: Тренировка на земле (продолжение) -->
+            <div class="training-block ground">
+                <h2>Тренировка на земле</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Ласточка с эластичной лентой: Находясь в положении ласточки, попросите кого-нибудь надеть эластичную ленту на поднятую руку или ногу и потянуть ее вниз. Ваша цель - сохранять прежнее положение, несмотря на сопротивление, это поможет повысить силу и стабильность.</li>
+                        <li>Ласточка с балансировочной подушкой/платформой: Подложите балансировочную подушку под колено во время выполнения ласточки. Это создает дополнительные трудности для вашего равновесия и контроля над телом.</li>
+                        <li>Переход из положения "скамейки" в положение "планка": Начните с положения "скамейка", затем плавно переместите ноги назад, чтобы перейти в положение "планка", а затем вернитесь в положение "скамейка", сохраняя при этом плечи на прежнем месте. Это упражнение повышает силу и стабильность мышц спины.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Выясните, есть ли проблемы с подвижностью, гибкостью или силой, когда рука или нога не могут достичь оптимальной высоты.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 4: Тренировка на земле (продолжение) -->
+            <div class="training-block ground">
+                <h2>Тренировка на земле</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Выполняйте ласточку только с одной поднятой рукой: Тренируйте положение ласточки, используя только одну руку. Этот вариант помогает изолировать и укрепить мышцы рук, необходимые для поднятия флага.</li>
+                        <li>Ласточка с эластичной лентой: Закрепите эластичную ленту под животом, протянув ее от правой ноги к левой руке. Плавно растягивайте ленту, сохраняя положение ласточки. Это упражнение развивает силу и координацию.</li>
+                        <li>Ласточка с отягощениями: при выполнении ласточки наденьте отягощения на руку и ногу. Это увеличивает сопротивление и помогает развить силу и контроль тела.</li>
+                        <li>Ласточка с круговыми движениями рук и ног: Находясь в положении ласточки, двигайте поднятыми рукой и ногой по кругу. Это упражнение улучшает подвижность, координацию и равновесие.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Выясните, есть ли проблемы с подвижностью, гибкостью или силой, когда рука или нога не могут достичь оптимальной высоты.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 5: Тренировка на лошади -->
+            <div class="training-block horse">
+                <h2>Тренировка на лошади</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Скамейка с прямой правой ногой: Сохраняйте положение скамейки, одновременно вытягивая правую ногу прямо вниз. Этот вариант по-другому влияет на ваше равновесие и устойчивость.</li>
+                        <li>Скамейка с подъёмом колен: Оставайтесь в скамейке, слегка приподнимайте колени, чтобы оказать давление на стопу. Это помогает улучшить силу голеностопа и контроль над ним.</li>
+                        <li>Ласточка с прямой ногой: Примите положение ласточки, опустив ногу прямо вниз. Сосредоточьтесь на сохранении устойчивости и выравнивании положения, пока ваша нога вытянута.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Всегда следите за тем, чтобы вольтижер поглощал движения лошади, и никогда не допускайте компенсацию силой в этой части.
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК 6: Тренировка на лошади (продолжение) -->
+            <div class="training-block horse">
+                <h2>Тренировка на лошади</h2>
+                <div class="training-content">
+                    <ul>
+                        <li>Ласточка с подъёмом колена: В положении "ласточки" слегка приподнимите колено, чтобы обеспечить давление на голеностопный сустав. Этот вариант развивает подвижность и силу голеностопного сустава.</li>
+                        <li>Ласточка с различным расположением рук: Поэкспериментируйте с различными положениями рук, например, на спине или животе, находясь в положении ласточки. Это развивает равновесие и координацию.</li>
+                        <li>Ласточка с закрытыми глазами: Примите положение ласточки с закрытыми глазами, чтобы улучшить проприоцепцию и пространственное восприятие.</li>
+                        <li>Ласточка только с одной рукой: Тренируйте положение ласточки, поднимая только руку. Это укрепляет мышцы рук, необходимые для выполнения ласточки.</li>
+                    </ul>
+                    <div class="coach-tip">
+                        <strong>Подсказка тренеру:</strong>
+                        Всегда следите за тем, чтобы вольтижер поглощал движения лошади, и никогда не допускайте компенсацию силой в этой части.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для увеличения фото -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+    function openModal(img) {
+        var modal = document.getElementById('imageModal');
+        var modalImg = document.getElementById('modalImage');
+        modal.style.display = 'block';
+        modalImg.src = img.src;
+        modal.classList.add('show');
+    }
+
+    function closeModal() {
+        var modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+    }
+
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Чтобы модальное окно не закрывалось при клике на само фото
+    document.getElementById('modalImage').addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+    </script>
+</body>
+</html>
